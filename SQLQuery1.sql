@@ -1,50 +1,64 @@
-CREATE TABLE Students(
-	[sid] INT NOT NULL IDENTITY(1,1),
-	[name] NVARCHAR(150) NOT NULL ,
-	[dob] DATE NOT NULL,
-	[gender] BIT NOT NULL DEFAULT 1,
-	[Address] VARCHAR(150) NOT NULL , 
-	CONSTRAINT pk_student PRIMARY KEY([sid]),											
-	CONSTRAINT check_name_6_to_32_character CHECK(LEN([name]) >= 6 AND LEN([name])<=32) 
+--Tao bang
+--1
+Create table Students(
+	StudentID int not  null primary key,
+	[Name] varchar(150) not null,
+	Gender varchar(150) not null,
+	DOB date not null
 );
 
-
-
-
-Create table Lecture(
-	[Lid] int not null Identity (1,1),
-	[name] nvarchar(150) not null,
-	[Email] nvarchar(150) not null,
-	Constraint pk_Lecture primary key([Lid]),										
+--2
+Create table Subject(
+	SubjectID int not null primary key,
+	[Name] varchar(150) not null,
 );
 
-
-
-Create table Subject (
-	[Suid] int not null identity (1,1),
-	[name] nvarchar(150) not null,
-	Constraint pk_Subject primary key([Suid]),
+--3
+Create table Semester(
+	SemesterID int not null primary key,
+	[Name] varchar(150) not null
 );
 
-
-create table Assessment (
-	[Aid] int not null identity (1,1),
-	[name] nvarchar(150) not null,
-	[Weight] decimal(4,2) not null,
-	[Suid] int not null,																
-	Constraint pk_Assessment primary key([Aid]),					
+--4
+Create table Semester_Subject(
+	SemesterID int not null,
+	SubjectID int not null,
+	primary key (SemesterID,SubjectID),
+	FOREIGN KEY (SemesterID) REFERENCES [Semester](SemesterID),
+	FOREIGN KEY (SubjectID) REFERENCES [Subject] (SubjectID)
 );
 
-drop table Assessment_Students
-create table Assessment_Students(
-	[Aid] int not null,
-	[sid] int not null,
+--5
+Create table [Group](
+	GroupID int not null primary key,
+	[Name] varchar(150) not null,
+	SubjectID INT FOREIGN KEY REFERENCES [Subject](SubjectID)
+);
+
+--6
+Create table Students_Group(
+	StudentID int not  null,
+	GroupID int not null,
+	primary key(StudentID, GroupID),
+	FOREIGN KEY (StudentID) REFERENCES [Students](StudentID),
+	FOREIGN KEY (GroupID) REFERENCES [Group] (GroupID)
+);
+
+--7
+Create table Assessment(
+	AssessmentID int not null primary key,
+	[Name] varchar(150) not null,
+	[Weight] int not null,
+	SubjectID INT FOREIGN KEY REFERENCES [Subject](SubjectID)
+);
+
+--8
+Create table Students_Assessment(
+	AssessmentID INT FOREIGN KEY REFERENCES [Assessment](AssessmentID),
+	StudentID int FOREIGN KEY REFERENCES Students(StudentID),
 	[Date] date not null,
-	[Score]	int not null,
-	[RetakeScore] int not null,
-	[DateRetake] date not null,
-	Constraint pk_Assessment_Student primary key(sid, Aid, [Date]),
-	CONSTRAINT pk_Students FOREIGN KEY (sid) REFERENCES Students([sid]),
-	CONSTRAINT pk_Assessment FOREIGN KEY (Aid) REFERENCES Assessment([Aid])	
+	Score int not null,
+	primary key (AssessmentID,StudentID,[Date])
 );
- 
+
+
